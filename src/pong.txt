@@ -1,0 +1,141 @@
+import simplegui
+import math
+import random
+
+w= 600
+h=400
+pad_h = 80
+pad_w = 20
+rad = 20
+vball = [0,0]
+vpad1 = 0
+vpad2 = 0
+left = True
+right = False
+winner1 = winner2 = ""
+
+def define ():
+    global ball,pad1,pad2, pad1a, pad1b, pad1c, pad1d, pad2a, pad2b,pad2c,pad2d, x,  y
+    x=0
+    y=0
+    ball = [w/2, h/2]
+    pad1a = [0, h/2-pad_h/2]
+    pad1b = [pad_w, h/2-pad_h/2]
+    pad1c = [pad_w, h/2+pad_h/2]
+    pad1d = [0, h/2+pad_h/2]
+    pad2a = [w, h/2-pad_h/2]
+    pad2b = [w-pad_w, h/2-pad_h/2]
+    pad2c = [w-pad_w, h/2+pad_h/2]
+    pad2d = [w, h/2+pad_h/2]
+    pad1 = [pad1a,pad1b,pad1c,pad1d]
+    pad2 = [pad2a,pad2b,pad2c,pad2d]
+    
+    
+define ()
+    
+def down (key):
+    global vpad1, vpad2
+    if key == simplegui.KEY_MAP["up"]:
+        vpad2 -= 5
+    elif key == simplegui.KEY_MAP["down"]:
+        vpad2 += 5
+    elif key == simplegui.KEY_MAP["w"]:
+        vpad1 -= 5
+    if key == simplegui.KEY_MAP["s"]:
+        vpad1 += 5
+        
+def up (key):
+    global vpad1, vpad2
+    if key == simplegui.KEY_MAP["up"]:
+        vpad2 = 0
+    elif key == simplegui.KEY_MAP["down"]:
+        vpad2 = 0
+    elif key == simplegui.KEY_MAP["w"]:
+        vpad1 = 0
+    if key == simplegui.KEY_MAP["s"]:
+        vpad1 = 0
+def start ():
+    define ()
+    global vball, winner1,winner2
+    vball = [random.choice([2,3,4]), random.choice([-2,-4,-3,3,4,2])]
+    winner1 = winner2 = ""
+def new_game():
+    global vball, ball
+    ball = [w/2,h/2]
+    vball = [random.choice([2,3,4]), random.choice([-5,-4,-3,3,4,5])]
+        
+    
+def draw_handler (canvas):   
+    global vpad1, vpad2, vball, ball, x, y, left, right, winner1, winner2
+    if (left):
+        ball[0]-=vball[0]
+        ball[1]-=vball[1]
+    if (right):
+        ball[0]+=vball[0]
+        ball[1]+=vball[1]
+    if (ball[1] == rad or ball[1] == h-rad):
+        vball[1] /= -1 
+    if ((ball[0]<=pad_w+rad and ball[1]>pad1a[1] and ball[1]<pad1c[1])or(ball[0]>=w-pad_w-rad and ball[1]>pad2a[1] and ball[1]<pad2c[1])): 
+        vball[0] = -1.2*vball[0]
+    elif (ball[0]>w-pad_w-rad):
+        if winner1 == "":
+            x +=1
+        if x==5:
+            winner1= "winnner"
+            vball = [0,0]
+        elif x<5:
+            new_game ()
+            right =  True
+            left = False
+    elif (ball[0]<pad_w+rad):
+        if winner2 == "":
+            y+=1
+        if y==5:
+            winner2 = "winner"
+            vball = [0,0]
+        elif y<5:
+            new_game ()
+            left = True
+            right = False
+        
+    pad2a[1] += vpad2
+    pad2b[1] += vpad2
+    pad2c[1] += vpad2
+    pad2d[1] += vpad2
+    pad1a[1] += vpad1
+    pad1b[1] += vpad1
+    pad1c[1] += vpad1
+    pad1d[1] += vpad1
+    if(pad2a[1]<=0):
+        pad2a[1]=pad2b[1]=0
+        pad2c[1]=pad2d[1]=pad_h
+    elif (pad2c[1]>=h):
+        pad2a[1]=pad2b[1]=h-pad_h
+        pad2c[1]=pad2d[1]=h
+    if(pad1a[1]<=0):
+        pad1a[1]=pad1b[1]=0
+        pad1c[1]=pad1d[1]=pad_h
+    elif (pad1c[1]>=h):
+        pad1a[1]=pad1b[1]=h-pad_h
+        pad1c[1]=pad1d[1]=h
+    
+    canvas.draw_text (str(x), [30,30], 30, "green")
+    canvas.draw_text (str(y), [w-50,30], 30, "green")
+    canvas.draw_circle (ball, rad, 2, "white", "red")
+    canvas.draw_line ((w/2, 0),(w/2, h), 1, "white")
+    canvas.draw_line ((pad_w, 0),(pad_w, h), 1, "white")
+    canvas.draw_line ((w-pad_w, 0),(w-pad_w, h), 1, "white")
+    canvas.draw_polygon (pad1, 2, "red","white")
+    canvas.draw_polygon (pad2, 2, "red", "white")
+    canvas.draw_text (winner1, [70,200], 30, "green")
+    canvas.draw_text (winner2, [370,200], 30, "green")
+    
+f = simplegui.create_frame ("pong", w, h)
+f.set_draw_handler (draw_handler)
+f.add_button ("start", start, 200)
+f.set_keydown_handler (down)
+f.set_keyup_handler (up)
+
+f.start()
+    
+    

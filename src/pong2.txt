@@ -1,0 +1,121 @@
+import simplegui
+import math
+import random
+
+w= 600
+h=400
+pad_h = 5
+pad_w = 80
+block_h = 10 
+block_w = 100
+rad = 20
+vpad = 0
+
+def define ():
+    global block, blocka, blockb, ball, vball,pad,pada, padb, lives, points, gameover, win
+    lives=3
+    points=0
+    ball = [w/2, h-pad_h-rad]
+    vball = [0,0]
+    pada = [w/2-pad_w/2, h-pad_h/2]
+    padb = [w/2+pad_w/2, h-pad_h/2]
+    pad = [pada,padb]
+    gameover = ""
+    blocka = [10, 45]
+    blockb = [block_w + 10, 45]
+    block = []
+    i= 0
+    while i<20:
+        
+        if i%5==0:
+            blocka [1] += block_h + 10
+            blockb [1] += block_h + 10
+            blocka [0] = 10
+            blockb [0] = block_w + 10
+        block.append([[blocka [0], blocka[1]],[blockb[0], blockb[1]]])
+        blocka [0] += block_w + 20
+        blockb [0] += block_w + 20
+        i+=1
+    
+define ()
+    
+def down (key):
+    global vpad, vball
+    if key == simplegui.KEY_MAP["left"]:
+        vpad -= 8
+    elif key == simplegui.KEY_MAP["right"]:
+        vpad += 8
+    elif key == simplegui.KEY_MAP["up"]and ball==[pada[0] + pad_w/2,h-pad_h-rad]:
+        vball = [random.choice([-2,-3,-4,2,3,4]), random.choice([-2,-3])]
+
+        
+def up (key):
+    global vpad
+    if key == simplegui.KEY_MAP["left"] or key == simplegui.KEY_MAP["right"]:
+        vpad = 0
+    
+def start ():
+    define ()
+
+
+def new_game():
+    global vball, ball
+    vball = [0,0]
+    ball = [pada[0] + pad_w/2, h-pad_h-rad]
+    
+def draw_handler (canvas):   
+    global block, vpad, vball,pad, ball, lives, points, gameover
+    ball[0]+=vball[0]
+    ball[1]+=vball[1]
+    if (ball[0]<= rad or ball[0]>= w-rad):
+        vball[0] /= -1 
+    if ((ball[1]>=h-pad_h-rad and ball[0]>pada[0] and ball[0]<padb[0])or(ball[1]<=rad)): 
+        vball[1] = -1.1*vball[1]
+    elif (ball[1]>h-rad-pad_h):
+        if gameover == "":
+            lives -=1
+        if lives==0:
+            gameover= "u lose, "+ str(points)+ " points"
+            vball = [0,0]
+        elif lives>0:
+            new_game ()
+    if (vball[0] == 0 and vball[1] == 0):
+        ball[0]=pada[0] + pad_w/2
+    for bl in block:
+        if (ball[1]<= bl[1][1]+rad and ball[0]>bl[0][0] and ball[0]<bl[1][0]):
+            vball[1] /= -1
+            points += 1
+            bl[0][0] = bl [0][1] = bl[1][0] = bl[1][1] = 0
+            if points == 20:
+                gameover="u won, "+ str(lives)+ " lives"
+                vball = [0,0]
+    pada[0] += vpad
+    padb[0] += vpad
+    
+    if(pada[0]<=0):
+        pada[0]=0
+        padb[0]=pad_w
+    elif (padb[0]>=w):
+        pada[0]=w-pad_w
+        padb[0]=w
+    
+    canvas.draw_text (str (lives)+ " lives", [30,30], 30, "black")
+    canvas.draw_text (str (points)+ " points", [w-120,30], 30, "black")
+    canvas.draw_circle (ball, rad, 2, "black", "white")
+    canvas.draw_line (pada,padb, pad_h, "black")
+    canvas.draw_line ((0,h-pad_h),(w,h-pad_h), 1, "black") 
+    canvas.draw_text (gameover, [70,200], 30, "black")
+    
+    for bl in block :
+        canvas.draw_line (bl[0],bl[1], block_h, "black")
+    
+f = simplegui.create_frame ("pong", w, h)
+f.set_canvas_background ("silver")
+f.set_draw_handler (draw_handler)
+f.add_button ("start", start, 200)
+f.set_keydown_handler (down)
+f.set_keyup_handler (up)
+
+f.start()
+    
+    

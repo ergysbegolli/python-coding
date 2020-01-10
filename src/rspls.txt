@@ -1,0 +1,51 @@
+import random
+
+def name2num (name):
+    if name=='rock':
+        num=0
+    elif name=='spock':
+        num=1
+    elif name=='paper':
+        num=2
+    elif name=='lizard':
+        num=3
+    elif name=='scissors':
+        num=4
+    else :
+        print 'invalid name'
+    return num
+
+def num2name(num):
+    if num==0:
+        name='rock'
+    elif num==1:
+        name='spock'
+    elif num==2:
+        name='paper'
+    elif num==3:
+        name='lizard'
+    elif num==4:
+        name='scissors'
+    return name
+
+def result (a,b):
+    return (a-b)%5
+
+def rspls(name):
+    print 'Player choose', name
+    plguess= name2num(name)
+    pcguess= random.randrange(0,5)
+    print 'Computer choose', num2name(pcguess)
+    if result (plguess, pcguess)==1 or result (plguess, pcguess)==2:
+        print 'Player beat computer'
+    elif result (plguess, pcguess)==3 or result (plguess, pcguess)==4:
+        print 'Computer beat player'
+    else :
+        print 'tie'
+    print''
+    
+rspls ('rock')
+rspls ('spock')
+rspls ('paper')
+rspls ('lizard')
+rspls ('scissors')

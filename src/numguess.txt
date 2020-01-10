@@ -1,0 +1,62 @@
+import simplegui
+import random
+import math
+
+rng = 100
+
+
+
+def new_game ():
+    global counter
+    global pcguess 
+    pcguess = random.randint (0,rng)
+    if rng == 100:
+        counter =7
+    else :
+        counter = 10
+    print "new game"
+    print "range is from 0 to", rng
+    print "num of remaining guesses is", counter
+    print ""
+
+def range100 ():
+    new_game()
+
+def range1000 ():
+    global rng
+    rng = 1000
+    new_game ()
+    
+def get_input (inp):
+    global guess
+    global counter
+    guess = int (inp)
+    print "ur guess was", guess
+    if guess==pcguess:
+        print "ur guess is right"
+        print ""
+    else:
+        counter -=1
+        print "num of remaining guesses is", counter
+        if counter != 0:
+            if guess > pcguess:
+                print "lower"
+                print ""
+            else: 
+                print "higher"
+                print ""
+        else :
+            print "u lose, pcguess was", pcguess
+            print ""
+            new_game()
+     
+    
+f = simplegui.create_frame ("guess the num", 200, 200)
+f.add_button ("range 0 to 100", range100, 200)
+f.add_button ("range 0 to 1000", range1000, 200)
+f.add_input ("enter ur guess", get_input, 200)
+
+f.start()
+        
+    
+    

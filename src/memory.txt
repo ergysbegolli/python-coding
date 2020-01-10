@@ -1,0 +1,92 @@
+import simplegui
+import random
+
+w = 800
+h = 100
+imgw = 236
+imgh = 324
+nums = range (0,16)
+card = simplegui.load_image ("https://i.pinimg.com/236x/23/48/8a/23488aa42a19433d34b72a5ee4ae5f14--bicycle-playing-cards-jouer.jpg")
+black = simplegui.load_image ("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/A_blank_black_picture.jpg/1536px-A_blank_black_picture.jpg")
+f = simplegui.create_frame ("memory", w, h )
+label = f.add_label("Turns: 0")
+def define():
+    global lst, num1, num2, ch,mag, magc, magw, image, check, numw, state, turns
+    magw = 50
+    magc = [25, h/2]
+    numw = 0
+    lst = list (nums)
+    random.shuffle(lst)
+    check = [False]
+    check *= 16
+    state = 0
+    turns = 0
+    num1 = num2 = 0
+    label.set_text("turns: " + str(turns))
+define ()
+
+
+
+def new_game ():
+    define ()
+    
+
+def click (pos):
+    global num1, num2, state,turns, numw, image, clc,a,b
+    clc = pos[0]/50
+    if state == 0 and check[clc] == False:
+        check[clc] = True
+        a = lst[clc]
+        if a>7:
+            num1 = a-8
+        else: 
+            num1=a
+        state = 1
+    elif state ==1 and check [clc] == False:
+        check [clc] = True
+        b = lst[clc]
+        if b > 7:
+            num2 = b-8
+        else:
+            num2=b
+        turns += 1
+        label.set_text ("turns: "+ str(turns))
+        state = 2
+    elif check [clc] == True:
+        pass
+    else:
+        if num1!=num2 or num2!=num1:
+            check[lst.index(a)]=False
+            check[lst.index(b)]=False
+        check [clc] = True
+        a = lst[clc]
+        if a>7:
+            num1 = a-8
+        else: 
+            num1=a
+        state = 1
+        
+def draw (canvas):
+    global magc, magw, h, lst, check,numw
+    numw=0
+    magc[0] = 25
+    for num in lst:
+        if check [lst.index (num)]:
+            canvas.draw_image(black, (imgw/2, imgh/2), (imgw, imgh),list(magc),(magw,h) )
+            if num <8:
+                canvas.draw_text(str (num),[numw, 75], 40, 'White')
+            else:
+                canvas.draw_text(str (num-8),[numw, 75], 40, 'White')
+        else:    
+            canvas.draw_image(card, (imgw/2, imgh/2), (imgw, imgh),[magc[0], magc[1]],(magw, h))
+        magc[0]+=50
+        numw += 50
+
+
+
+
+f.set_draw_handler (draw)
+f.add_button ("start", new_game)
+f.set_mouseclick_handler (click)
+
+f.start()

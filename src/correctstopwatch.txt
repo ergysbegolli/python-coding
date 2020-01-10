@@ -1,0 +1,61 @@
+import simplegui
+import math
+
+
+watch = 0
+x = 0 #num of stop whole second
+y = 0 #num of stops    
+
+def format (w):
+    global minute
+    global second
+    minute = w/ 600
+    second = (w / 10.0) % 60
+    if second <10:
+        watch = str(minute) + ':0' + str (second)
+        return watch
+    else:
+        watch = str(minute) + ':' + str (second)
+        return watch
+
+def tick ():
+    global watch
+    watch +=1
+
+
+def draw_handler (canvas):
+    canvas.draw_text (format(watch), [200,150], 30, "white")
+    canvas.draw_text (str(x) + '/' + str (y), [350, 30], 30, "green")
+    canvas.draw_circle ((240,140), 100, 1, "white")
+     
+    
+def start ():
+    timer.start () 
+
+def stop ():
+    global x , y
+    if timer.is_running():
+        timer.stop()
+        y += 1
+        if (10*second % 10 == 0.0):
+            x += 1
+    
+def reset ():
+    global x, y, watch
+    x = y = 0
+    watch = 0
+    timer.stop()
+    
+
+
+
+timer = simplegui.create_timer (100, tick)
+f = simplegui.create_frame ("stopwatch", 400, 300)
+f.set_draw_handler (draw_handler)
+f.add_button ("start", start, 200)
+f.add_button ("stop", stop, 200)
+f.add_button ("reset", reset, 200)
+
+f.start()
+    
+    
